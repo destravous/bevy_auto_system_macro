@@ -395,3 +395,6 @@ fn cleanup_dead(
     }
 }
 ```
+
+## License
+This project is licensed under either the MIT License (see LICENSE-MIT) or the Apache License 2.0 (see LICENSE-APACHE), at your option.

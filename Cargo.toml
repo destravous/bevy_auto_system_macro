@@ -4,9 +4,11 @@ version = "0.1.0"
 authors = ["destravous <destravous@gmail.com>"]
 description = "A macro for making bevy system queries more conveniant"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/destravous/bevy_auto_system_macro"
 keywords = ["proc_macro", "bevy", "ecs", "macro", "gamedev"]
 categories = ["game-development", "development-tools::procedural-macro-helpers"]
 readme = "README.md"
+include = ["src/**/*", "Cargo.toml", "LICENSE-APACHE", "LICENSE-MIT", "README.md"]
 
 edition = "2018"
 
