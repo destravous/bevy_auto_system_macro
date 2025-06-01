@@ -1,6 +1,6 @@
 
 Do you find updating your bevy system parameters tedious?
-Do you wish you could just do my_entity.get<Component>?
+Do you wish you could just do `my_entity.get<Component>`?
 Well, I've got the crate for you!
 
 [`bevy_auto_system_macro`](https://crates.io/crates/bevy_auto_system_macro)
@@ -50,23 +50,28 @@ fn squad_heal(leaders_query: Query<(Entity, &HealPower, &SquadMembers), (With<Sq
 - `#entities[]` - Iterate over all entities
 - `#entities[id]` - Look up specific entity by ID
 - `#entities` - Get query reference (no iteration)
+
 **Component Access:**
 - `.get<T>` - Immutable component access
 - `.get_mut<T>` - Mutable component access
 - `.try_get<T>` - Optional immutable access (returns Option)
 - `.try_get_mut<T>` - Optional mutable access (returns Option)
+
 **Query Filters:**
 - `.is<T>` - Entity must have component T (With<T>)
 - `.is_not<T>` - Entity must not have component T (Without<T>)
 - `.changed<T>` - Component T was changed (Changed<T>)
 - `.added<T>` - Component T was added (Added<T>)
+
 **Resources:**
 - `#get_resource<T>` - Access resource immutably
 - `#get_resource_mut<T>` - Access resource mutably
+
 **Commands:**
 - `#commands.spawn(...)` - Spawn new entity
 - `#entity.command().despawn()` - Despawn entity
 - `#entity.command().insert(Component)` - Insert component
+
 **Relationships:**
 - `.via<RelationComponent>[]` - Iterate over related entities, currently only works in a for item in `#entity.via<RelationComponent>[]` kind of pattern.
 
