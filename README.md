@@ -1,5 +1,50 @@
 
-The `system!` macro transforms entity-focused code into efficient Bevy ECS systems.
+Do you find updating your bevy system parameters tedious?
+Do you wish you could just do my_entity.get<Component>?
+Well, I've got the crate for you!
+
+[`bevy_auto_system_macro`](https://crates.io/crates/bevy_auto_system_macro)
+
+A crate that fully fills out system parameters *and* iteration loops, and then packages the variables in a nice IDE friendly ViewStruct.
+So you can just write this:
+```rust
+system!(fn squad_heal() {
+    for #leader in #leaders.is<SquadLeader>[] {
+        let heal_amount = #leader.get<HealPower>.0;
+        for #member in #leader.is<Morale>.via<SquadMembers>[] {
+            #member.get_mut<Health>.0 += heal_amount * #get_resource<Time>.delta_secs_f64();
+            #member.get_mut<Morale>.0 += 5;
+        }
+    }
+});
+```
+And have it expand to:
+```rust
+fn squad_heal(leaders_query: Query<(Entity, &HealPower, &SquadMembers), (With<SquadLeader>, With<Morale>)>, mut member_query: Query<(Entity, &mut Health, &mut Morale)>, time: Res<Time>) {
+    struct MemberView<'a> {
+        id: Entity,
+        health: Mut<'a, Health>,
+        morale: Mut<'a, Morale>,
+    }
+    struct LeadersView<'a> {
+        id: Entity,
+        heal_power: &'a HealPower,
+        squad_members: &'a SquadMembers,
+    }
+    for (entity, heal_power, squad_members) in leaders_query.iter() {
+        let leader = LeadersView { id: entity, heal_power, squad_members };
+        let heal_amount = leader.heal_power.0;
+        for member_id in leader.squad_members.iter() {
+            let Ok((entity, health, morale)) = member_query.get_mut(member_id) else { continue; };
+            let mut member = MemberView { id: entity, health, morale };
+            member.health.0 += heal_amount * time.delta_secs_f64();
+            member.morale.0 += 5;
+        }
+    }
+}
+```
+
+
 # Core Operations
 **Entity Queries:**
 - `#entities[]` - Iterate over all entities
