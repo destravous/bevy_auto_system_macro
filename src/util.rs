@@ -4,11 +4,18 @@ use quote::quote;
 use crate::analysis::{AmortizedData, ComponentAccess, Filter, QueryData};
 use crate::codegen::{OrderedInfo, ParameterInfo};
 
+/// Has special handling for < and >, replaceing them with _
+/// and also removing all whitespace from source str.
 pub fn to_snake_case(s: &str) -> String {
     let mut result = String::new();
     let mut chars = s.chars().peekable();
 
     while let Some(ch) = chars.next() {
+        let mut ch = ch;
+        if ch == '<' || ch == '>' {
+            ch = '_';
+        }
+        
         if ch.is_uppercase() {
             if !result.is_empty()
                 && (result
@@ -24,6 +31,7 @@ pub fn to_snake_case(s: &str) -> String {
             result.push(ch);
         }
     }
+    result = result.split_whitespace().collect::<String>();
 
     result
 }

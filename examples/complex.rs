@@ -209,6 +209,7 @@ struct SpawnTimer(f32);
 
 system!(fn spawn_enemies() {
     let time = #get_resource<Time>;
+    let mesh_assets = #get_resource_mut<Assets<Mesh>>;
     let mut spawn_timer = #get_resource_mut<SpawnTimer>;
 
     spawn_timer.0 += time.delta_secs();
@@ -226,10 +227,12 @@ system!(fn spawn_enemies() {
 
 fn spawn_enemies_e(
     time: Res<Time>,
-    spawn_timer: ResMut<SpawnTimer>,
+    mut spawn_timer: ResMut<SpawnTimer>,
+    mut assets__mesh_: bevy::ecs::system::ResMut<Assets<Mesh>>,
     mut commands: Commands
 ) {
     let time = time;
+    let mesh_assets = assets__mesh_;
     let mut spawn_timer = spawn_timer;
 
     spawn_timer.0 += time.delta_secs();

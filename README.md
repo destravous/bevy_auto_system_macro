@@ -1,11 +1,11 @@
+[![Crates.io](https://img.shields.io/crates/v/bevy_auto_system_macro.svg)](https://crates.io/crates/bevy_auto_system_macro)
+[![Documentation](https://docs.rs/bevy_auto_system_macro/badge.svg)](https://docs.rs/bevy_auto_system_macro)
 
 Do you find updating your bevy system parameters tedious?
 Do you wish you could just do `my_entity.get<Component>`?
 Well, I've got the crate for you!
 
-[`bevy_auto_system_macro`](https://crates.io/crates/bevy_auto_system_macro)
-
-A crate that fully fills out system parameters *and* iteration loops, and then packages the variables in a nice IDE friendly ViewStruct.
+bevy_auto_system_macro is a crate that fully fills out system parameters *and* iteration loops, and then packages the variables in a nice IDE friendly ViewStruct.
 So you can just write this:
 ```rust
 system!(fn squad_heal() {
