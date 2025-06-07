@@ -130,6 +130,7 @@ pub fn system(input: TokenStream) -> TokenStream {
     let (params, body) = generate_final_tokens(transformed_body, &chains, &analyzer);
 
     let all_params = combine_params(parsed_fn.existing_params, params);
+    let middle = parsed_fn.middle_tokens;
 
     let output = match parsed_fn.kind {
         CallableKind::Function => {
@@ -139,14 +140,14 @@ pub fn system(input: TokenStream) -> TokenStream {
             let prefix = parsed_fn.prefix_tokens;
             quote! {
                 #(#doc_attrs)*
-                #prefix(#all_params) {
+                #prefix(#all_params) #middle {
                     #body
                 }
             }
         }
         CallableKind::Closure => {
             quote! {
-                |#all_params| {
+                |#all_params| #middle {
                     #body
                 }
             }
@@ -162,6 +163,7 @@ struct FnParser {
     pub existing_params: TokenStream2,
     pub body: TokenStream2,
     pub prefix_tokens: TokenStream2, // Everything before params (e.g., "pub fn name")
+    pub middle_tokens: TokenStream2, // Everything between params and body (return type, where clause)
 }
 
 #[derive(Debug, Clone)]
@@ -186,6 +188,7 @@ fn parse_fn(input: TokenStream2) -> Result<FnParser, TokenStream2> {
     let mut pos = 0;
     let mut prefix_tokens = TokenStream2::new();
     let mut existing_params = TokenStream2::new();
+    let mut middle_tokens = TokenStream2::new();
     let mut body = TokenStream2::new();
     let mut kind = None;
 
@@ -222,7 +225,7 @@ fn parse_fn(input: TokenStream2) -> Result<FnParser, TokenStream2> {
                 state = ParseState::Done;
             }
             (ParseState::AfterFunctionParams, _) => {
-                // Skip tokens between params and body (like return type, where clauses)
+                middle_tokens.extend(std::iter::once(token.clone()));
             }
 
             // In closure params - collect until closing `|`
@@ -239,7 +242,7 @@ fn parse_fn(input: TokenStream2) -> Result<FnParser, TokenStream2> {
                 state = ParseState::Done;
             }
             (ParseState::AfterClosureParams, _) => {
-                // Could be `->` return type or other tokens before body
+                middle_tokens.extend(std::iter::once(token.clone()));
             }
 
             _ => {
@@ -265,6 +268,7 @@ fn parse_fn(input: TokenStream2) -> Result<FnParser, TokenStream2> {
         existing_params,
         body,
         prefix_tokens,
+        middle_tokens,
     })
 }
 

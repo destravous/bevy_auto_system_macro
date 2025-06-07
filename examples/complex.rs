@@ -37,16 +37,17 @@ struct Player;
 #[derive(Component)]
 struct Mana(u32);
 
-system!(fn heal_players() {
+system!(fn heal_players<T>() -> bool where T : Component  {
     for #player in #players.is<Player>[] {
         if #player.get<Health>.0 < 50 {
             #player.get_mut<Health>.0 += 10;
             #player.get_mut<Mana>.0 -= 5;
         }
     }
+    true
 });
 
-fn heal_players_e(mut players_query: Query<(Entity, &mut Health, &mut Mana), With<Player>>) {
+fn heal_players_e<T>(mut players_query: Query<(Entity, &mut Health, &mut Mana), With<Player>>) -> bool where T : Component {
     struct PlayersView<'a> {
         id: Entity,
         health: Mut<'a, Health>,
@@ -60,6 +61,7 @@ fn heal_players_e(mut players_query: Query<(Entity, &mut Health, &mut Mana), Wit
             player.mana.0 -= 5;
         }
     }
+    true
 }
 
 #[derive(Resource)]
@@ -228,7 +230,7 @@ system!(fn spawn_enemies() {
 fn spawn_enemies_e(
     time: Res<Time>,
     mut spawn_timer: ResMut<SpawnTimer>,
-    mut assets__mesh_: bevy::ecs::system::ResMut<Assets<Mesh>>,
+    mut assets__mesh_: ResMut<Assets<Mesh>>,
     mut commands: Commands
 ) {
     let time = time;
